@@ -1,4 +1,5 @@
 const User = require('../schemas/user');
+const AuthValidator = require('../validators/auth');
 
 const AuthController = {};
 const statusCode = _CONSTANT.statusCode;
@@ -6,6 +7,7 @@ const statusCode = _CONSTANT.statusCode;
 const signup = async (req, res) => {
   try {
     let body = req.body;
+    await AuthValidator.signupValidator(body);
     // console.log('>>>>>>>', body);
     let userExistByEmail = await User.findOne({ email: body.email }).lean();
     if (userExistByEmail !== null) {
@@ -47,6 +49,7 @@ const signup = async (req, res) => {
 const signin = async (req, res) => {
   try {
     let body = req.body;
+    await AuthValidator.signinValidator(body);
 
     let userExistByEmail = await User.findOne({ email: body.email }).lean();
     if (userExistByEmail == null) {

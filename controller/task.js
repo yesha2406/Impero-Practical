@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Task = require('../schemas/task');
 
 const TaskController = {};
@@ -214,10 +215,52 @@ const deleteTask = async (req, res) => {
   }
 };
 
+const getTaskByProjects = async (req, res) => {
+  try {
+    let id = req.body.projectId;
+    const projectId = mongoose.Types.ObjectId(id);
+    let tasks = await Task.aggregate([
+      {
+        $match: { projectId: projectId },
+      },
+      {
+        $lookup: {
+          from: 'projects', // Name of the collection to perform the lookup
+          localField: '$projectId', // Field from the tasks collection
+          foreignField: '_id', // Field from the projects collection
+          as: 'projectTasks', // Alias for the resulting array of tasks with project information
+        },
+      },
+    ]);
+
+    console.log(tasks);
+
+    console.log('getTaskByProjects Controller DATA :::  ::: ', tasks);
+    return _RESPONSE.sendSuccessResponse(
+      res,
+      _MESSAGES.GET_TASK_DATA,
+      statusCode.SUCCESS,
+      tasks
+    );
+  } catch (err) {
+    console.log(
+      'Error in getTaskByProjects Controller CATCH :::  ::: ',
+      err.message
+    );
+    return _RESPONSE.sendErrorResponse(
+      res,
+      err,
+      statusCode.INTERNAL_SERVER_ERROR,
+      {}
+    );
+  }
+};
+
 TaskController.createTask = createTask;
 TaskController.getAllTasks = getAllTasks;
 TaskController.getTaskDataByPk = getTaskDataByPk;
 TaskController.updateTask = updateTask;
 TaskController.deleteTask = deleteTask;
+TaskController.getTaskByProjects = getTaskByProjects;
 
 module.exports = TaskController;

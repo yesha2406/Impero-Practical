@@ -3,13 +3,17 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    firstName: {
+    username: {
       type: String,
       required: true,
     },
+    firstName: {
+      type: String,
+      required: false,
+    },
     lastName: {
       type: String,
-      required: true,
+      required: false,
     },
     email: {
       type: String,
@@ -22,7 +26,7 @@ const userSchema = new Schema(
     gender: {
       type: String,
       enum: ['Male', 'Female', 'Others'],
-      required: true,
+      required: false,
     },
     dateOfBirth: {
       type: Date,
